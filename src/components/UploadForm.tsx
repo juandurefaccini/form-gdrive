@@ -37,10 +37,11 @@ interface IFormValues {
 export default function UploadForm() {
   const { user } = useAuth();
 
-  const formInitialValues: IFormValues = {
+  const formInitialValues = {
     materia: EMateriaId.POO,
     fecha: new Date(),
     archivo: "",
+    archivo_tipo: "",
     categoria: ECategoriaArchivo.parcial,
     anio_catedra: EAnioCatedra.primero,
   };
@@ -49,7 +50,33 @@ export default function UploadForm() {
     initialValues: formInitialValues,
     onSubmit: (values) => {
       console.log(values);
-      alert(values);
+      const fileName = values.archivo.split("\\").pop(); // TODO : REVISAR EN WINDOWS
+      const extension = values.archivo_tipo;
+      const path = values.archivo;
+      const catedra = values.materia;
+      const fehca = values.fecha;
+      const categoria = values.categoria;
+
+      const res =
+        "fileName: " +
+        fileName +
+        "\n" +
+        "extension: " +
+        extension +
+        "\n" +
+        "path: " +
+        path +
+        "\n" +
+        "catedra: " +
+        catedra +
+        "\n" +
+        "fecha: " +
+        fehca +
+        "\n" +
+        "categoria: " +
+        categoria;
+
+      alert(res);
     },
     validate: (values) => {
       console.log(values);
@@ -131,7 +158,13 @@ export default function UploadForm() {
           type="file"
           name="archivo"
           id="archivo"
-          onChange={formik.handleChange}
+          accept="image/*,.pdf"
+          onChange={(event) => {
+            formik.handleChange(event);
+
+            if (event.target.files)
+              formik.setFieldValue("archivo_tipo", event.target.files[0].type);
+          }}
           onBlur={formik.handleBlur}
           value={formik.values.archivo}
         />
