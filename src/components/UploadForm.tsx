@@ -11,6 +11,7 @@ enum EMateriaId {
   LENGPROG = "Lenguajes de Programacion",
 }
 
+// TODO : PARCIAL --> PARCIALES
 enum ECategoriaArchivo {
   parcial = "Parcial",
   recuperatorio = "Recuperatorio",
@@ -28,7 +29,7 @@ enum EAnioCatedra {
 
 interface IFormValues {
   materia: EMateriaId;
-  fecha: Date | undefined;
+  fecha: Date;
   archivo: File;
   categoria: ECategoriaArchivo;
   anio_catedra: EAnioCatedra;
@@ -39,7 +40,7 @@ export default function UploadForm() {
 
   const formInitialValues: IFormValues = {
     materia: EMateriaId.POO,
-    fecha: undefined,
+    fecha: new Date(0),
     archivo: new File([""], ""),
     categoria: ECategoriaArchivo.parcial,
     anio_catedra: EAnioCatedra.primero,
@@ -48,14 +49,26 @@ export default function UploadForm() {
   const formik = useFormik({
     initialValues: formInitialValues,
     onSubmit: (values) => {
-      console.log("onSubmit : ", values);
       const fileName = values.archivo.name;
       const extension = values.archivo.type;
       const pathSource = "PATH TRUCHO PORQUE NO TENGO JEJE";
       const catedra = values.materia;
-      const fecha = values.fecha;
       const categoria = values.categoria;
       const anio_catedra = values.anio_catedra;
+
+      const fecha: string = values.fecha.toString();
+      const DD = fecha.split("-")[2];
+      const MM = fecha.split("-")[1];
+      const YYYY = fecha.split("-")[0];
+
+      const nombreFinal = `${categoria}_${catedra}_${DD}_${MM}_${YYYY}`.replace(
+        " ",
+        "_"
+      );
+
+      console.log("Archivo: " + values.archivo);
+
+      alert("nombreFinal " + nombreFinal);
 
       const file = {
         name: fileName,
@@ -73,14 +86,13 @@ export default function UploadForm() {
       alert(JSON.stringify(file) + JSON.stringify(scope));
     },
     validate: (values) => {
-      console.log(values);
       const errors: any = {};
 
-      console.log(values);
-
       if (!values.materia) errors.materia = "Debe seleccionar una materia";
-      if (!values.fecha) errors.fecha = "Debe seleccionar una fecha";
-      if (!values.archivo) errors.archivo = "Debe seleccionar un archivo";
+      if (values.fecha.toString == new Date(0).toString)
+        errors.fecha = "Debe seleccionar una fecha";
+      if (!values.archivo.size) errors.archivo = "Debe seleccionar un archivo";
+
       if (!values.categoria)
         errors.categoria = "Debe seleccionar una categoria";
       if (!values.anio_catedra)
@@ -157,6 +169,10 @@ export default function UploadForm() {
             const data: File = event.target.files[0];
             console.log(data);
             formik.setFieldValue("archivo", data);
+
+            // USAR UN READ STREAM INTERCEPTANDO EL EVENTO DE SUBIDA DE ARCHIVO
+
+            console.log(data.stream);
             /*
             if (event.target.files) {
               const file = event.currentTarget.files[0];
