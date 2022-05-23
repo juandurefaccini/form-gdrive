@@ -26,7 +26,7 @@ export default function LoginButton() {
       className="px-6 py-2 rounded cursor-pointer bg-black text-white"
       onClick={handleGoogleSignIn}
     >
-      Google Login
+      Iniciar sesion con Google
     </button>
   );
 }

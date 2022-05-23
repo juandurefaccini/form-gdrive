@@ -3,7 +3,7 @@ import LoginButton from "./LoginButton";
 
 export default function Home() {
   return (
-    <div className="flex justify-center items-center flex-col w-full h-full ">
+    <div className="flex justify-center items-center flex-col w-full h-full space-y-3">
       <h1>Bienvenido</h1>
       <p>
         Este es el formulario de subida de archivos para el Almacenamiento
