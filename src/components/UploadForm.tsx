@@ -28,8 +28,8 @@ enum EAnioCatedra {
 
 interface IFormValues {
   materia: EMateriaId;
-  fecha: Date;
-  archivo: string;
+  fecha: Date | undefined;
+  archivo: File;
   categoria: ECategoriaArchivo;
   anio_catedra: EAnioCatedra;
 }
@@ -37,11 +37,10 @@ interface IFormValues {
 export default function UploadForm() {
   const { user } = useAuth();
 
-  const formInitialValues = {
+  const formInitialValues: IFormValues = {
     materia: EMateriaId.POO,
-    fecha: new Date(),
-    archivo: "",
-    archivo_tipo: "",
+    fecha: undefined,
+    archivo: new File([""], ""),
     categoria: ECategoriaArchivo.parcial,
     anio_catedra: EAnioCatedra.primero,
   };
@@ -49,38 +48,35 @@ export default function UploadForm() {
   const formik = useFormik({
     initialValues: formInitialValues,
     onSubmit: (values) => {
-      console.log(values);
-      const fileName = values.archivo.split("\\").pop(); // TODO : REVISAR EN WINDOWS
-      const extension = values.archivo_tipo;
-      const path = values.archivo;
+      console.log("onSubmit : ", values);
+      const fileName = values.archivo.name;
+      const extension = values.archivo.type;
+      const pathSource = "PATH TRUCHO PORQUE NO TENGO JEJE";
       const catedra = values.materia;
-      const fehca = values.fecha;
+      const fecha = values.fecha;
       const categoria = values.categoria;
+      const anio_catedra = values.anio_catedra;
 
-      const res =
-        "fileName: " +
-        fileName +
-        "\n" +
-        "extension: " +
-        extension +
-        "\n" +
-        "path: " +
-        path +
-        "\n" +
-        "catedra: " +
-        catedra +
-        "\n" +
-        "fecha: " +
-        fehca +
-        "\n" +
-        "categoria: " +
-        categoria;
+      const file = {
+        name: fileName,
+        extension: extension,
+        pathSource: pathSource,
+      };
 
-      alert(res);
+      const scope = {
+        catedra: catedra,
+        tipo: categoria,
+        anioAcademico: anio_catedra,
+      };
+
+      // Display file and scope data in alert
+      alert(JSON.stringify(file) + JSON.stringify(scope));
     },
     validate: (values) => {
       console.log(values);
       const errors: any = {};
+
+      console.log(values);
 
       if (!values.materia) errors.materia = "Debe seleccionar una materia";
       if (!values.fecha) errors.fecha = "Debe seleccionar una fecha";
@@ -117,7 +113,6 @@ export default function UploadForm() {
           <option value={EMateriaId.BDD1}>{EMateriaId.BDD1}</option>
           <option value={EMateriaId.LENGPROG}>{EMateriaId.LENGPROG}</option>
         </select>
-        {/* <Alert>{formik.errors.materia}</Alert> */}
 
         <label className="w-24 text-sm" htmlFor="anio_materia">
           Anio Catedra
@@ -136,7 +131,6 @@ export default function UploadForm() {
           <option value={EAnioCatedra.cuarto}>{EAnioCatedra.cuarto}</option>
           <option value={EAnioCatedra.quinto}>{EAnioCatedra.quinto}</option>
         </select>
-        {/* <Alert>{formik.errors.anio_catedra}</Alert> */}
 
         <label className="w-24 text-sm" htmlFor="fecha">
           Fecha
@@ -147,9 +141,9 @@ export default function UploadForm() {
           id="fecha"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          value={formik.values.fecha.toString()}
+          value={formik.values.fecha}
         />
-        {/* <Alert>{formik.errors.fecha}</Alert> */}
+        <Alert>{formik.errors.fecha}</Alert>
 
         <label className="w-24 text-sm" htmlFor="archivo">
           Archivo
@@ -160,15 +154,19 @@ export default function UploadForm() {
           id="archivo"
           accept="image/*,.pdf"
           onChange={(event) => {
-            formik.handleChange(event);
-
-            if (event.target.files)
+            const data: File = event.target.files[0];
+            console.log(data);
+            formik.setFieldValue("archivo", data);
+            /*
+            if (event.target.files) {
+              const file = event.currentTarget.files[0];
               formik.setFieldValue("archivo_tipo", event.target.files[0].type);
+              formik.setFieldValue("archivo", event.target.files[0]);
+            } */
           }}
           onBlur={formik.handleBlur}
-          value={formik.values.archivo}
         />
-        {/* <Alert>{formik.errors.archivo}</Alert> */}
+        <Alert>{formik.errors.archivo}</Alert>
 
         <label className="w-24 text-sm" htmlFor="categoria">
           Categoria
