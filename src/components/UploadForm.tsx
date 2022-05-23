@@ -11,12 +11,11 @@ enum EMateriaId {
   LENGPROG = "Lenguajes de Programacion",
 }
 
-// TODO : PARCIAL --> PARCIALES
 enum ECategoriaArchivo {
-  parcial = "Parcial",
-  recuperatorio = "Recuperatorio",
-  prefinal = "Prefinal",
-  final = "Final",
+  parcial = "Parciales",
+  recuperatorio = "Recuperatorios",
+  prefinal = "Prefinales",
+  final = "Finales",
 }
 
 enum EAnioCatedra {
