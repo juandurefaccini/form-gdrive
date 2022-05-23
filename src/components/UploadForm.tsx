@@ -38,6 +38,16 @@ interface IFormValues {
 export default function UploadForm() {
   const { user } = useAuth();
 
+  //Function : Get byteArray from file
+  const getByteArrayFromFile = (file: File) => {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
   const formInitialValues: IFormValues = {
     materia: EMateriaId.POO,
     fecha: new Date(0),
@@ -51,7 +61,6 @@ export default function UploadForm() {
     onSubmit: (values) => {
       const fileName = values.archivo.name;
       const extension = values.archivo.type;
-      const pathSource = "PATH TRUCHO PORQUE NO TENGO JEJE";
       const catedra = values.materia;
       const categoria = values.categoria;
       const anio_catedra = values.anio_catedra;
@@ -66,24 +75,26 @@ export default function UploadForm() {
         "_"
       );
 
-      console.log("Archivo: " + values.archivo);
+      getByteArrayFromFile(values.archivo)
+        .then((res) => {
+          const byteArray = res.toString();
+          const file = {
+            name: nombreFinal,
+            extension: extension,
+            byteArray: byteArray,
+          };
 
-      alert("nombreFinal " + nombreFinal);
+          const scope = {
+            catedra: catedra,
+            tipo: categoria,
+            anioAcademico: anio_catedra,
+          };
 
-      const file = {
-        name: fileName,
-        extension: extension,
-        pathSource: pathSource,
-      };
-
-      const scope = {
-        catedra: catedra,
-        tipo: categoria,
-        anioAcademico: anio_catedra,
-      };
-
-      // Display file and scope data in alert
-      alert(JSON.stringify(file) + JSON.stringify(scope));
+          alert(JSON.stringify(file) + JSON.stringify(scope));
+        })
+        .catch((err) => {
+          alert(err);
+        });
     },
     validate: (values) => {
       const errors: any = {};
@@ -170,9 +181,6 @@ export default function UploadForm() {
             console.log(data);
             formik.setFieldValue("archivo", data);
 
-            // USAR UN READ STREAM INTERCEPTANDO EL EVENTO DE SUBIDA DE ARCHIVO
-
-            console.log(data.stream);
             /*
             if (event.target.files) {
               const file = event.currentTarget.files[0];

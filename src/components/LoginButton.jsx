@@ -7,8 +7,9 @@ export default function LoginButton() {
   const navigate = useNavigate();
   const { loginWithGoogle } = useAuth();
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async (e) => {
     try {
+      e.preventDefault();
       await loginWithGoogle();
       navigate("/subirArchivo");
     } catch (error) {
