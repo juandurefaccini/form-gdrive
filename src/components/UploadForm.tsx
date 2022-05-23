@@ -113,10 +113,9 @@ export default function UploadForm() {
 
   return (
     <div className="w-full flex flex-col justify-center items-center h-full">
-      <div className="py-4">Usuario ingresado : {user?.email}</div>
       <form
         onSubmit={formik.handleSubmit}
-        className="p-6 bg-[#b2fef7] w-min flex flex-col space-y-4 rounded"
+        className="p-6 bg-black text-white w-min flex flex-col space-y-4 rounded"
       >
         <p className="text-md">Formulario de subida de archivo</p>
         <label className="w-24 text-sm" htmlFor="materia">
@@ -125,7 +124,7 @@ export default function UploadForm() {
         <select
           name="materia"
           id="materia"
-          className="w-full"
+          className="w-full bg-white text-black"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.materia}
@@ -142,7 +141,7 @@ export default function UploadForm() {
         <select
           name="anio_materia"
           id="anio_materia"
-          className="w-full"
+          className="w-full bg-white text-black"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.anio_catedra}
@@ -161,6 +160,7 @@ export default function UploadForm() {
           type="date"
           name="fecha"
           id="fecha"
+          className="w-full bg-white text-black"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.fecha}
@@ -197,7 +197,7 @@ export default function UploadForm() {
         <select
           name="categoria"
           id="categoria"
-          className="w-full"
+          className="w-full bg-white text-black"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.categoria}
@@ -217,7 +217,10 @@ export default function UploadForm() {
         </select>
         {/* <Alert>{formik.errors.categoria}</Alert> */}
 
-        <button type="submit" className="border rounded bg-white">
+        <button
+          type="submit"
+          className="border rounded bg-white text-black uppercase"
+        >
           Enviar
         </button>
       </form>

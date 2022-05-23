@@ -25,9 +25,9 @@ export function AuthProvider({ children }) {
     await signOut(auth);
   };
 
-  const loginWithGoogle = () => {
+  const loginWithGoogle = async () => {
     const googleProvider = new GoogleAuthProvider();
-    signInWithPopup(auth, googleProvider);
+    await signInWithPopup(auth, googleProvider);
   };
 
   useEffect(() => {

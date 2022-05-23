@@ -9,9 +9,13 @@ export default function LoginButton() {
 
   const handleGoogleSignIn = async (e) => {
     try {
-      e.preventDefault();
-      await loginWithGoogle();
-      navigate("/subirArchivo");
+      loginWithGoogle()
+        .then(() => {
+          navigate("/subirArchivo");
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
     } catch (error) {
       alert(error.message);
     }
@@ -19,7 +23,7 @@ export default function LoginButton() {
 
   return (
     <button
-      className="px-6 py-2 rounded cursor-pointer bg-[#4f9a94]"
+      className="px-6 py-2 rounded cursor-pointer bg-black text-white"
       onClick={handleGoogleSignIn}
     >
       Google Login

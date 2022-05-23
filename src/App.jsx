@@ -6,7 +6,7 @@ import { AuthProvider } from "./context/authContext.jsx";
 
 function App() {
   return (
-    <div className="h-screen bg-teal-300 flex flex-col">
+    <div className="h-screen bg-white flex flex-col">
       <AuthProvider>
         <div className="h-12 shrink-0">
           <TopBar />
