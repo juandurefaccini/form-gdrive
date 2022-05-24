@@ -3,6 +3,7 @@ import { FormikConsumer, useFormik } from "formik";
 import { useEffect } from "react";
 import { useAuth } from "../context/authContext";
 import Alert from "./Alert";
+import uploadFile from "../uploader/upload.js";
 
 enum EMateriaId {
   POO = "Programacion Orientada a Objetos",
@@ -90,6 +91,10 @@ export default function UploadForm() {
           };
 
           alert(JSON.stringify(file) + JSON.stringify(scope));
+
+          uploadFile(file, scope, () => {
+            console.log("Uploaded?");
+          });
         })
         .catch((err) => {
           alert(err);
