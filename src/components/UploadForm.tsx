@@ -2,8 +2,8 @@ import * as React from "react";
 import { FormikConsumer, useFormik } from "formik";
 import { useEffect } from "react";
 import { useAuth } from "../context/authContext";
+import postArchivo from "../services/services";
 import Alert from "./Alert";
-import uploadFile from "../uploader/upload.js";
 
 enum EMateriaId {
   POO = "Programacion Orientada a Objetos",
@@ -78,7 +78,7 @@ export default function UploadForm() {
       getByteArrayFromFile(values.archivo)
         .then((res) => {
           const byteArray = res.toString();
-          const file = {
+          const fileData = {
             name: nombreFinal,
             extension: extension,
             byteArray: byteArray,
@@ -90,11 +90,15 @@ export default function UploadForm() {
             anioAcademico: anio_catedra,
           };
 
-          alert(JSON.stringify(file) + JSON.stringify(scope));
+          alert(JSON.stringify(fileData) + JSON.stringify(scope));
 
-          uploadFile(file, scope, () => {
-            console.log("Uploaded?");
-          });
+          postArchivo(values.archivo, scope, fileData, user)
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           alert(err);
