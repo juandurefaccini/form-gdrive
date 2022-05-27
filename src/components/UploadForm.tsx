@@ -2,7 +2,7 @@ import * as React from "react";
 import { FormikConsumer, useFormik } from "formik";
 import { useEffect } from "react";
 import { useAuth } from "../context/authContext";
-import postArchivo from "../services/services";
+import { postArchivo } from "../services/services";
 import Alert from "./Alert";
 
 enum EMateriaId {
@@ -90,14 +90,14 @@ export default function UploadForm() {
             anioAcademico: anio_catedra,
           };
 
-          alert(JSON.stringify(fileData) + JSON.stringify(scope));
-
+          /*           alert(JSON.stringify(fileData) + JSON.stringify(scope));
+           */
           postArchivo(values.archivo, scope, fileData, user)
             .then((res) => {
-              console.log(res);
+              alert(res);
             })
             .catch((err) => {
-              console.log(err);
+              alert(err);
             });
         })
         .catch((err) => {

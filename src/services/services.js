@@ -1,7 +1,6 @@
 import axios from "axios";
-import { getAuth } from "../../utils/auth";
 
-const url = "https://trabajo-sistemas-operativos.herokuapp.com";
+const url = "http://localhost:8080/";
 
 const axiosClient = axios.create({
   baseURL: url,
@@ -18,12 +17,19 @@ const postArchivo = async (file, scope, fileData, user) => {
   // Generacion de formData
   const formData = new FormData();
   formData.append("data", file);
-  formData.append("scope", scope);
-  formData.append("fileData", fileData);
-  formData.append("user", user); // TODO : USAR TOKEN
+
+  const request = {
+    name: fileData.name,
+    extension: fileData.extension,
+    catedra: scope.catedra,
+    tipo: scope.tipo,
+    anioAcademico: scope.anioAcademico,
+  };
+
+  formData.append("request", JSON.stringify(request));
 
   try {
-    const res = await axiosClient.post("/file", formData, {
+    const res = await axiosClient.post("/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
