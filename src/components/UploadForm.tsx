@@ -1,30 +1,33 @@
 import * as React from "react";
 import { FormikConsumer, useFormik } from "formik";
 import { useEffect } from "react";
+// @ts-ignore
 import { useAuth } from "../context/authContext";
+// @ts-ignore
 import { postArchivo } from "../services/services";
+// @ts-ignore
 import Alert from "./Alert";
 
 enum EMateriaId {
-  POO = "Programacion Orientada a Objetos",
-  SO = "Sistemas Operativos",
-  BDD1 = "Base de Datos",
-  LENGPROG = "Lenguajes de Programacion",
+  POO = "programacion orientada a objetos",
+  SO = "sistemas operativos",
+  BDD1 = "base de datos",
+  LENGPROG = "lenguajes de programacion",
 }
 
 enum ECategoriaArchivo {
-  parcial = "Parciales",
-  recuperatorio = "Recuperatorios",
-  prefinal = "Prefinales",
-  final = "Finales",
+  parcial = "parciales",
+  recuperatorio = "recuperatorios",
+  prefinal = "prefinales",
+  final = "finales",
 }
 
 enum EAnioCatedra {
-  primero = "Primero",
-  segundo = "Segundo",
-  tercero = "Tercero",
-  cuarto = "Cuarto",
-  quinto = "Quinto",
+  primero = "primero",
+  segundo = "segundo",
+  tercero = "tercero",
+  cuarto = "cuarto",
+  quinto = "quinto",
 }
 
 interface IFormValues {
@@ -90,8 +93,6 @@ export default function UploadForm() {
             anioAcademico: anio_catedra,
           };
 
-          /*           alert(JSON.stringify(fileData) + JSON.stringify(scope));
-           */
           postArchivo(values.archivo, scope, fileData, user)
             .then((res) => {
               alert(res);
@@ -185,6 +186,7 @@ export default function UploadForm() {
           id="archivo"
           accept="image/*,.pdf"
           onChange={(event) => {
+            // @ts-ignore
             const data: File = event.target.files[0];
             console.log(data);
             formik.setFieldValue("archivo", data);

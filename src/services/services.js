@@ -10,8 +10,6 @@ const axiosClient = axios.create({
   },
 });
 
-axiosClient.defaults.timeout = 5000;
-
 //Send File throug HTTP POST
 const postArchivo = async (file, scope, fileData, user) => {
   // Generacion de formData
@@ -29,9 +27,10 @@ const postArchivo = async (file, scope, fileData, user) => {
   formData.append("request", JSON.stringify(request));
 
   try {
-    const res = await axiosClient.post("/", formData, {
+    const res = await axiosClient.post("/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        authorization: `Bearer ${user.accessToken}`,
       },
     });
 
