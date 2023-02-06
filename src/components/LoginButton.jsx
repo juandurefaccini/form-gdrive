@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +22,7 @@ export default function LoginButton() {
 
   return (
     <button
-      className="px-6 py-2 rounded cursor-pointer bg-black text-white"
+      className="px-6 py-2 rounded-md cursor-pointer bg-black text-white"
       onClick={handleGoogleSignIn}
     >
       Iniciar sesion con Google

@@ -1,6 +1,8 @@
-export enum ECategoriaArchivo {
-    parcial = "parciales",
-    recuperatorio = "recuperatorios",
-    prefinal = "prefinales",
-    final = "finales",
+export const categoriasArchivo = {
+  "Parcial": "parciales",
+  "Recuperatorio": "recuperatorios",
+  "Prefinal": "prefinales",
+  "Final": "finales",
 }
+
+export const defaultCategoriaArchivo = categoriasArchivo.Parcial;

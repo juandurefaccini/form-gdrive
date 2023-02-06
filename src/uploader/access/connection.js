@@ -6,7 +6,8 @@ import { google } from "googleapis";
  * la cuenta de servicio
  */
 
-const credentialFilename = __dirname + "src/uploader/resources/credentials.json";
+const credentialFilename =
+  __dirname + "src/uploader/resources/credentials.json";
 
 //appRoot.path + "src/upader/resources/credentials.json";
 
