@@ -6,6 +6,7 @@ import Alert from "./Alert";
 import {EMateriaId} from "../model/materia/materia";
 import {ECategoriaArchivo} from "../model/archivo/categoria_archivo";
 import {EAnioCatedra} from "../model/catedra/anio_catedra";
+import {useSnackbar} from "notistack";
 
 interface IFormValues {
   materia: EMateriaId;
@@ -25,6 +26,7 @@ const formInitialValues: IFormValues = {
 
 export default function UploadForm() {
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar()
 
   const getByteArrayFromFile = (file: File) => {
     return new Promise<ArrayBuffer>((resolve, reject) => {
@@ -69,11 +71,12 @@ export default function UploadForm() {
           };
 
           postArchivo(values.archivo, scope, fileData, user)
-            .then((res) => {
-              alert(res);
+            .then(() => {
+              enqueueSnackbar("Archivo subido con exito", {variant: "success"})
             })
             .catch((err) => {
-              alert(err);
+              enqueueSnackbar(`Error: ${err}`
+                  , {variant: "error"})
             });
         })
         .catch((err) => {
