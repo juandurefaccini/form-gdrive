@@ -129,7 +129,7 @@ export default function UploadForm() {
               />
               <FileField name={"archivo"} label={"Subir archivo"}/>
               <div className={`mt-8 p-4 rounded-md text-center cursor-pointer bg-white`}>
-                <button className="cursor-pointer" type="submit" disabled={ props.isSubmitting || !props.dirty }>Subir archivo</button>
+                <button className="cursor-pointer" type="submit" disabled={ props.isSubmitting }>Subir archivo</button>
               </div>
             </div>
           </Form>
