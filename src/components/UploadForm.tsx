@@ -80,7 +80,8 @@ export default function UploadForm() {
             });
         })
         .catch((err) => {
-          alert(err);
+          enqueueSnackbar(`Error con el archivo: ${err}`
+              , {variant: "error"})
         });
     },
     validate: (values) => {
@@ -163,17 +164,8 @@ export default function UploadForm() {
           id="archivo"
           accept="image/*,.pdf"
           onChange={(event) => {
-            // @ts-ignore
-            const data: File = event.target.files[0];
-            console.log(data);
+            const data: File | null = event.target.files[0];
             formik.setFieldValue("archivo", data);
-
-            /*
-            if (event.target.files) {
-              const file = event.currentTarget.files[0];
-              formik.setFieldValue("archivo_tipo", event.target.files[0].type);
-              formik.setFieldValue("archivo", event.target.files[0]);
-            } */
           }}
           onBlur={formik.handleBlur}
         />
@@ -194,8 +186,6 @@ export default function UploadForm() {
               <option value={ECategoriaArchivo[key]}>{ECategoriaArchivo[key]}</option>
           ))}
         </select>
-        {/* <Alert>{formik.errors.categoria}</Alert> */}
-
         <button
           type="submit"
           className="border rounded bg-white text-black uppercase"
