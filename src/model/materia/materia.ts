@@ -9,4 +9,3 @@ export const materias = {
   "Sistemas de Informacion": "sistemas de informacion",
   "Ingenieria de Software": "ingenieria de software",
 };
-
