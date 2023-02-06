@@ -1,34 +1,11 @@
 import * as React from "react";
-import { FormikConsumer, useFormik } from "formik";
-import { useEffect } from "react";
-// @ts-ignore
+import { useFormik } from "formik";
 import { useAuth } from "../context/authContext";
-// @ts-ignore
 import { postArchivo } from "../services/services";
-// @ts-ignore
 import Alert from "./Alert";
-
-enum EMateriaId {
-  POO = "programacion orientada a objetos",
-  SO = "sistemas operativos",
-  BDD1 = "base de datos",
-  LENGPROG = "lenguajes de programacion",
-}
-
-enum ECategoriaArchivo {
-  parcial = "parciales",
-  recuperatorio = "recuperatorios",
-  prefinal = "prefinales",
-  final = "finales",
-}
-
-enum EAnioCatedra {
-  primero = "primero",
-  segundo = "segundo",
-  tercero = "tercero",
-  cuarto = "cuarto",
-  quinto = "quinto",
-}
+import {EMateriaId} from "../model/materia/materia";
+import {ECategoriaArchivo} from "../model/archivo/categoria_archivo";
+import {EAnioCatedra} from "../model/catedra/anio_catedra";
 
 interface IFormValues {
   materia: EMateriaId;
@@ -38,10 +15,17 @@ interface IFormValues {
   anio_catedra: EAnioCatedra;
 }
 
+const formInitialValues: IFormValues = {
+  materia: EMateriaId.POO,
+  fecha: new Date(0),
+  archivo: new File([""], ""),
+  categoria: ECategoriaArchivo.parcial,
+  anio_catedra: EAnioCatedra.primero,
+};
+
 export default function UploadForm() {
   const { user } = useAuth();
 
-  //Function : Get byteArray from file
   const getByteArrayFromFile = (file: File) => {
     return new Promise<ArrayBuffer>((resolve, reject) => {
       const reader = new FileReader();
@@ -51,18 +35,9 @@ export default function UploadForm() {
     });
   };
 
-  const formInitialValues: IFormValues = {
-    materia: EMateriaId.POO,
-    fecha: new Date(0),
-    archivo: new File([""], ""),
-    categoria: ECategoriaArchivo.parcial,
-    anio_catedra: EAnioCatedra.primero,
-  };
-
   const formik = useFormik({
     initialValues: formInitialValues,
     onSubmit: (values) => {
-      const fileName = values.archivo.name;
       const extension = values.archivo.type;
       const catedra = values.materia;
       const categoria = values.categoria;
@@ -121,6 +96,8 @@ export default function UploadForm() {
     },
   });
 
+  // @ts-ignore
+  // @ts-ignore
   return (
     <div className="w-full flex flex-col justify-center items-center h-full">
       <form
@@ -139,10 +116,9 @@ export default function UploadForm() {
           onBlur={formik.handleBlur}
           value={formik.values.materia}
         >
-          <option value={EMateriaId.POO}>{EMateriaId.POO}</option>
-          <option value={EMateriaId.SO}>{EMateriaId.SO}</option>
-          <option value={EMateriaId.BDD1}>{EMateriaId.BDD1}</option>
-          <option value={EMateriaId.LENGPROG}>{EMateriaId.LENGPROG}</option>
+            {Object.keys(EMateriaId).map((key) => (
+            <option value={EMateriaId[key]}>{EMateriaId[key]}</option>
+            ))}
         </select>
 
         <label className="w-24 text-sm" htmlFor="anio_materia">
@@ -156,11 +132,9 @@ export default function UploadForm() {
           onBlur={formik.handleBlur}
           value={formik.values.anio_catedra}
         >
-          <option value={EAnioCatedra.primero}>{EAnioCatedra.primero}</option>
-          <option value={EAnioCatedra.segundo}>{EAnioCatedra.segundo}</option>
-          <option value={EAnioCatedra.tercero}>{EAnioCatedra.tercero}</option>
-          <option value={EAnioCatedra.cuarto}>{EAnioCatedra.cuarto}</option>
-          <option value={EAnioCatedra.quinto}>{EAnioCatedra.quinto}</option>
+          {Object.keys(EAnioCatedra).map((key) => (
+              <option value={EAnioCatedra[key]}>{EAnioCatedra[key]}</option>
+          ))}
         </select>
 
         <label className="w-24 text-sm" htmlFor="fecha">
@@ -213,18 +187,9 @@ export default function UploadForm() {
           onBlur={formik.handleBlur}
           value={formik.values.categoria}
         >
-          <option value={ECategoriaArchivo.parcial}>
-            {ECategoriaArchivo.parcial}
-          </option>
-          <option value={ECategoriaArchivo.recuperatorio}>
-            {ECategoriaArchivo.recuperatorio}
-          </option>
-          <option value={ECategoriaArchivo.prefinal}>
-            {ECategoriaArchivo.prefinal}
-          </option>
-          <option value={ECategoriaArchivo.final}>
-            {ECategoriaArchivo.final}
-          </option>
+          {Object.keys(ECategoriaArchivo).map((key) => (
+              <option value={ECategoriaArchivo[key]}>{ECategoriaArchivo[key]}</option>
+          ))}
         </select>
         {/* <Alert>{formik.errors.categoria}</Alert> */}
 
