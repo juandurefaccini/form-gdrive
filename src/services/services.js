@@ -11,7 +11,7 @@ const axiosClient = axios.create({
 });
 
 //Send File throug HTTP POST
-const postArchivo = async (file, scope, fileData, user) => {
+export const postArchivo = async (file, scope, fileData, user) => {
   // Generacion de formData
   const formData = new FormData();
   formData.append("data", file);
@@ -41,5 +41,3 @@ const postArchivo = async (file, scope, fileData, user) => {
     throw new Error(error.message);
   }
 };
-
-export { postArchivo };

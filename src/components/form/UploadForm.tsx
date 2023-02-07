@@ -1,7 +1,5 @@
 import * as React from "react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
-import { useAuth } from "../../context/authContext";
-import { postArchivo } from "../../services/services";
 import { materias } from "../../model/materia/materia";
 import { categoriasArchivo } from "../../model/archivo/categoria_archivo";
 import { aniosCatedra } from "../../model/catedra/anio_catedra";
@@ -13,6 +11,9 @@ import { DateField } from "./input/DateField";
 import moment from "moment/moment";
 import { FormTitle } from "./FormTitle";
 import { FileField } from "./FileField";
+import { postArchivo } from "../../services/services";
+import { useAuth } from "../../context/authContext.jsx";
+import { Card } from "../layout/Card";
 
 interface IFormValues {
   materia: string;
@@ -94,7 +95,7 @@ export default function UploadForm() {
   });
 
   return (
-    <div className="w-full flex flex-col justify-center items-center h-full">
+    <Card>
       <Formik
         initialValues={formInitialValues}
         validationSchema={validationSchema}
@@ -104,7 +105,7 @@ export default function UploadForm() {
       >
         {(props: FormikProps<any>) => (
           <Form>
-            <div className={"p-6 bg-black flex flex-col space-y-4 rounded-md"}>
+            <div className="space-y-6 mt-6 mb-0">
               <FormTitle title={"Formulario de subida de archivo"} />
               <SelectField
                 name={"materia"}
@@ -113,7 +114,7 @@ export default function UploadForm() {
                   value: materia[1],
                   label: materia[0],
                 }))}
-                disabled={props.isSubmitting}
+                // disabled={props.isSubmitting}
               />
               <SelectField
                 name={"categoria"}
@@ -122,7 +123,7 @@ export default function UploadForm() {
                   value: categoria[1],
                   label: categoria[0],
                 }))}
-                disabled={props.isSubmitting}
+                // disabled={props.isSubmitting}
               />
               <SelectField
                 name={"anio_catedra"}
@@ -131,21 +132,29 @@ export default function UploadForm() {
                   value: año[1],
                   label: año[0],
                 }))}
-                disabled={props.isSubmitting}
+                // disabled={props.isSubmitting}
               />
               <DateField
                 name={"fecha"}
                 label="Fecha"
-                disabled={props.isSubmitting}
+                // disabled={props.isSubmitting}
               />
               <FileField name={"archivo"} label={"Subir archivo"} />
               <div
-                className={`mt-8 p-4 rounded-md text-center cursor-pointer bg-white`}
+                className={`mt-8 py-1 rounded-md text-center cursor-pointer bg-white space-x-6 flex justify-between`}
               >
                 <button
-                  className="cursor-pointer"
-                  type="submit"
-                  disabled={props.isSubmitting}
+                  className="w-full cursor-pointer inline-block rounded-lg bg-gray-500 py-2 text-sm font-medium text-white"
+                  onClick={() => props.resetForm()}
+                  type="button"
+                  // disabled={props.isSubmitting}
+                >
+                  Limpiar
+                </button>
+                <button
+                    className="w-full cursor-pointer ml-3 inline-block rounded-lg bg-blue-500 py-2 text-sm font-medium text-white"
+                    type="submit"
+                    // disabled={props.isSubmitting}
                 >
                   Subir archivo
                 </button>
@@ -154,6 +163,6 @@ export default function UploadForm() {
           </Form>
         )}
       </Formik>
-    </div>
+    </Card>
   );
 }

@@ -19,20 +19,27 @@ export const SelectField = ({
   options,
   disabled,
 }: SelectProps) => (
-  <div className={"py-1 flex flex-col"}>
-    <label className={"text-white"} htmlFor={name}>
+  <div>
+    <label className="text-sm font-medium" htmlFor={name}>
       {label}
     </label>
-    <Field as="select" name={name} disabled={disabled}>
-      <option value={""}>Seleccionar</option>
-      {options.map((option) => (
-        <option value={option.value} key={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </Field>
-    <ErrorMessage name={name}>
-      {(msg) => <div className={"text-red-500"}>{msg}</div>}
-    </ErrorMessage>
+    <div className="relative mt-1">
+      <Field
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        as="select"
+        name={name}
+        disabled={disabled}
+      >
+        <option value={""}>Seleccionar</option>
+        {options.map((option) => (
+          <option value={option.value} key={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </Field>
+      <ErrorMessage name={name}>
+        {(msg) => <div className={"text-red-500 text-xs mt-2" }>{msg}</div>}
+      </ErrorMessage>
+    </div>
   </div>
 );
