@@ -125,7 +125,7 @@ export default function UploadForm() {
               <DateField
                 name={"fecha"}
                 label="Fecha"
-                disabled={props.isSubmitting}
+                // disabled={props.isSubmitting}
               />
               <FileField name={"archivo"} label={"Subir archivo"}/>
               <div className={`mt-8 p-4 rounded-md text-center cursor-pointer bg-white`}>
