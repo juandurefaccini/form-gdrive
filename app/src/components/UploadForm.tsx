@@ -1,10 +1,7 @@
 import * as React from "react";
 import { FormikConsumer, useFormik } from "formik";
 import { useEffect } from "react";
-// @ts-ignore
-import { useAuth } from "../context/authContext";
-// @ts-ignore
-import { postArchivo } from "../services/services";
+
 // @ts-ignore
 import Alert from "./Alert";
 
@@ -39,17 +36,6 @@ interface IFormValues {
 }
 
 export default function UploadForm() {
-  const { user } = useAuth();
-
-  //Function : Get byteArray from file
-  const getByteArrayFromFile = (file: File) => {
-    return new Promise<ArrayBuffer>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as ArrayBuffer);
-      reader.onerror = (error) => reject(error);
-      reader.readAsArrayBuffer(file);
-    });
-  };
 
   const formInitialValues: IFormValues = {
     materia: EMateriaId.POO,
@@ -62,8 +48,6 @@ export default function UploadForm() {
   const formik = useFormik({
     initialValues: formInitialValues,
     onSubmit: (values) => {
-      const fileName = values.archivo.name;
-      const extension = values.archivo.type;
       const catedra = values.materia;
       const categoria = values.categoria;
       const anio_catedra = values.anio_catedra;
@@ -77,33 +61,24 @@ export default function UploadForm() {
         " ",
         "_"
       );
+      
+      const file = {
+          name: nombreFinal,
+          // @ts-ignore
+          pathSource : values.archivo.path,
+          extension : values.archivo.type
+      };
 
-      getByteArrayFromFile(values.archivo)
-        .then((res) => {
-          const byteArray = res.toString();
-          const fileData = {
-            name: nombreFinal,
-            extension: extension,
-            byteArray: byteArray,
-          };
+      const scope = {
+        catedra: catedra,
+        tipo: categoria,
+        anioAcademico: anio_catedra,
+      };
 
-          const scope = {
-            catedra: catedra,
-            tipo: categoria,
-            anioAcademico: anio_catedra,
-          };
+      const ipcRenderer = (window as any).ipcRenderer;
+      ipcRenderer.send('file:upload', { file: file, scope: scope });
 
-          postArchivo(values.archivo, scope, fileData, user)
-            .then((res) => {
-              alert(res);
-            })
-            .catch((err) => {
-              alert(err);
-            });
-        })
-        .catch((err) => {
-          alert(err);
-        });
+    
     },
     validate: (values) => {
       const errors: any = {};
@@ -173,7 +148,7 @@ export default function UploadForm() {
           className="w-full bg-white text-black"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          value={formik.values.fecha}
+          //value={formik.values.fecha} // TODO
         />
         <Alert>{formik.errors.fecha}</Alert>
 
@@ -188,15 +163,10 @@ export default function UploadForm() {
           onChange={(event) => {
             // @ts-ignore
             const data: File = event.target.files[0];
+
             console.log(data);
             formik.setFieldValue("archivo", data);
 
-            /*
-            if (event.target.files) {
-              const file = event.currentTarget.files[0];
-              formik.setFieldValue("archivo_tipo", event.target.files[0].type);
-              formik.setFieldValue("archivo", event.target.files[0]);
-            } */
           }}
           onBlur={formik.handleBlur}
         />

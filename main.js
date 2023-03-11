@@ -1,45 +1,40 @@
-import { app, BrowserWindow } from "electron";
-import path from "path";
+const { app, BrowserWindow } = require('electron');
+const url = require('url');
+const path = require('path');
+const { ipcMain } = require('electron/main');
 
-const IS_DEV = process.env.IS_IN_DEVELOPMENT || false;
+const upload  = require("./app/src/node/service/upload");
 
-function createWindow() {
-  // Create the main Electron window
-  const win = new BrowserWindow({
-    width: 1200,
-    height: 600,
+let mainWindow;
+
+function createMainWindow() {
+  mainWindow = new BrowserWindow({
+    title: 'form-gdrive',
+    width: 1500,
+    height: 800,
     webPreferences: {
+      contextIsolation: true,
       nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
-  if (IS_DEV) {
-    // If we are in development mode we load content from localhost server - vite
-    // and open the developer tools
-    win.loadURL("http://localhost:3000");
-    win.webContents.openDevTools();
-  } else {
-    // In all other cases, load the index.html file from the dist folder
-    win.loadURL(`file://${path.join(__dirname, "..", "dist", "index.html")}`);
-  }
+  mainWindow.webContents.openDevTools();
+
+  const startUrl = url.format({
+    pathname: path.join(__dirname, './app/build/index.html'),
+    protocol: 'file',
+  });
+
+  mainWindow.loadURL('http://localhost:3000');
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createMainWindow);
 
-app.on("window-all-closed", () => {
-  // On macOS, it's common for an app and its menu bar to remain
-  // active until the user shuts down the application via the Cmd + Q shortcut
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
+ipcMain.on('file:upload', async (e, opt) => {
+    
+    upload.uploadFile(opt.file, opt.scope);
 
-app.on("activate", () => {
-  // On macOS, if an application is in the dock, it is common for a window to be created after
-  // clicking on the icon in the dock if there are no windows active
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+    return true;
+    
 });

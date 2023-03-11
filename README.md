@@ -2,6 +2,12 @@
 
 ## Scripts para iniciar el proyecto
 
-<code> npm run dev </code>
+### Dependencias
+<code> npm i </code> Directorio '.' 
 
-<code> npm run electron:dev </code>
+<code> npm i </code> Directorio './app' 
+
+### Run
+<code> npm run start </code> Directorio './app' 
+
+<code> npm run start </code> Directorio '.' 
