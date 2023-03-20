@@ -1,9 +1,10 @@
 const access = require('../access-drive/data_access');
 
+
 /**
- * Simple busqueda de ocurrencia dentro de la lista de atchivos
+ * Busqueda de ocurrencia dentro de la lista de archivos
  * @param fileName: nombre del archivo que se quiere subir
- * @param filesFromPath: archivos "hijos" del padre de el archivo a subir
+ * @param filesFromPath: archivos "hijos" de la carpeta padre del archivo a subir
  * @returns {boolean}: verdadero si existe un archivo con el mismo nombre, falso en caso contrario
  */
 function contains(fileName, filesFromPath) {
@@ -13,27 +14,24 @@ function contains(fileName, filesFromPath) {
     return false;
 }
 
+
 /**
  * Busca al padre del archivo a subir, chequea por elementos repetidos y realiza el insert
  * @param fileContainer:  Contiene todos los datos del archivo a subir
  */
 async function uploadFileService(fileContainer) {
 
-    let parent =  await access.getParent(fileContainer.path);
-
-    if (!parent)
-        //Siempre debe tener un padre, si es vacio ocurrio algun error.
-        return;
+    const parent =  await access.getParentFile(fileContainer.path);
 
     fileContainer.parent = parent;
 
-    let filesFromPath = await access.getFilesFromPath(parent.id);
-    if (contains(fileContainer.name, filesFromPath)) {
-        console.log("El archivo ya existe!");
-        return;
-    }
+    const filesFromPath = await access.getChildrenFilesFolder(parent.id);
+
+    if (contains(fileContainer.name, filesFromPath)) 
+        throw {message:"Duplicate file \""+ fileContainer.name + "\""};  
 
     return access.insert(fileContainer);
 }
+
 
 module.exports = {uploadFileService};

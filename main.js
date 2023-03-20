@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron');
-const url = require('url');
 const path = require('path');
 const { ipcMain } = require('electron/main');
 
@@ -21,20 +20,17 @@ function createMainWindow() {
 
   mainWindow.webContents.openDevTools();
 
-  const startUrl = url.format({
-    pathname: path.join(__dirname, './app/build/index.html'),
-    protocol: 'file',
-  });
-
   mainWindow.loadURL('http://localhost:3000');
 }
 
 app.whenReady().then(createMainWindow);
 
-ipcMain.on('file:upload', async (e, opt) => {
-    
-    upload.uploadFile(opt.file, opt.scope);
 
-    return true;
-    
-});
+ipcMain.on('file:upload', (event, opt) => {
+
+    upload.uploadFile(opt.file, opt.scope).then(
+        (response) => event.reply('asynchronous-response', response)
+    ).catch(
+        (error) => event.reply('asynchronous-error', error)
+    ) 
+})

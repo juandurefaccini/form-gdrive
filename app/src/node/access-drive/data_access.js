@@ -1,56 +1,105 @@
 const drive = require('./connection')
 
+
 /**
- * LLamado a la API para obtener los archivos hijos de el id dado por parametro
- * @param folderId: Id de la carpeta contenedora de archivos
- * @param successCallback: callback para retornas los datos(archivos)
- * @param errorCallback: callback para informar que hubo un error
+ * LLamado a la API para obtener los archivos hijos de la carpeta dada por parametro
+ * @param folderId: id de la carpeta contenedora de archivos
+ * @param successCallback: lista de resultados(archivos)
+ * @param errorCallback: mensaje de error
  */
 function getChildrenAPI(folderId, successCallback, errorCallback) {
     drive.build.files.list({
         fields: 'nextPageToken, files(id, name)',
         q: `'${folderId}' in parents`
+    
     }, (err, res) => {
-        if (err) errorCallback('La API retorno un error: ' + err);
-        successCallback(res.data.files);
+        if(err) errorCallback(err.message);
+        else successCallback(res.data.files);       
     });
 }
 
+
 /**
- * Wrapper sobre la llamada a la API
- * @param folderId: Id de la carpeta contenedora
- * @returns {Promise}: Resultado de la consulta
+ * Promise Wrapper sobre la llamada a la API
+ * @param folderId: id de la carpeta contenedora
+ * @returns {Promise}: lista de archivos hijos de la carpeta
  */
 function getChildrenWrapper(folderId) {
     return new Promise((resolve, reject) => {
         getChildrenAPI(
             folderId,
-            (successResponse) => {
-                resolve(successResponse);
-            },
-            (errorResponse) => {
-                reject(errorResponse);
-            }
+            (successResponse) => { resolve(successResponse); },
+            (errorResponse) => { reject(errorResponse); }
         );
     });
 }
 
 
 /**
- * A partir de un id de una carpeta, se buscan las referencias y se retornan las archivos "hijos"
- * @param folderId: Id de la carpeta contenedora
- * @returns {Promise}: Resultado de la consulta (Lista de archivos "hijos") o null en caso de error
+ * Dado un id de una carpeta, se buscan las referencias y se retornan los archivos "hijos"
+ * @param folderId: id de la carpeta contenedora
+ * @returns {Promise}: resultado de la consulta (Lista de archivos "hijos")
  */
-async function getFilesFromPath(folderId) {
-    return await getChildrenWrapper(folderId);
+function getChildrenFilesFolder(folderId) {
+    return getChildrenWrapper(folderId);
+}
+
+
+/** 
+ * Inserta un archivo, referenciando al padre correspondiente
+ * @param fileContainer: contiene todos los datos del archivo a subir
+ * @param successCallback: id del archivo agregado 
+ * @param errorCallback: mensaje de error
+ */
+function insertFile(fileContainer, successCallback, errorCallback) {
+    let fileMetadata = {
+        name: fileContainer.name,
+        parents: [fileContainer.parent.id]
+    };
+
+    drive.build.files.create({
+            resource: fileMetadata,
+            media: fileContainer.media,
+            fields: 'id'
+        }, (err, res) => {
+            if (err) errorCallback(err.message);
+            else successCallback(fileContainer.name +  " file has been added" +  ", id: " + res.data.id );
+        }
+    );
 }
 
 
 /**
- * Retorna el archivo asociado al nombre dado por parametro
- * @param childrenList: Lista de archivos en la cual se debe buscar
- * @param name: Nombre del archivo que se quiere obtener
- * @returns {File|null}: Retorna el archivo si este es encontrado en la lista, null en otro caso.
+ * Promise Wrapper sobre la llamada a la API para insertar un archivo
+ * @param fileContainer: contiene todos los datos del archivo a subir
+ * @returns {Promise}: resultado de la operacion
+ */
+function wrapperInsert(fileContainer){
+    return new Promise((resolve, reject) => {
+        insertFile(
+            fileContainer,
+            (successResponse) => { resolve(successResponse); },
+            (errorResponse) => { reject(errorResponse); }
+        );
+    });
+}
+
+
+/**
+ * Inserta un archivo en Google Drive
+ * @param fileContainer: datos del archivo
+ * @returns {Promise}: resultado de la operacion 
+ */
+function insert(fileContainer){
+    return wrapperInsert(fileContainer);
+}
+
+
+/**
+ * Busqueda de un archivo por nombre
+ * @param childrenList: lista de archivos en la cual se debe buscar
+ * @param name: nombre del archivo que se quiere obtener
+ * @returns: retorna el archivo si este es encontrado en la lista, null en otro caso.
  */
 function getChildrenPath(childrenList, name) {
     for (const file of childrenList) {
@@ -60,13 +109,16 @@ function getChildrenPath(childrenList, name) {
     return null;
 }
 
+
 /**
- * A partir de un path "logico", se comienza la busqueda de las carpetas desde "root", hacia sus hijos, hasta encontrar el path completo
- * y finalmente el padre asociado a dicho path
- * @param path: Path que se  formo a partir de los datos del usuario
- * @returns {Promise|*}: Retorna la carpeta padre y en otro caso, se informa un error con el callback
+ * A partir de un path "logico"(Ej: My Drive/tercero/sistemas operativos/parciales), se comienza la busqueda 
+ * de las carpetas desde "root"(My Drive) hacia sus capetas hijas, hasta encontrar la ultima capeta del path, 
+ * que corresponde a la capeta padre de el archivo que se quiere insertar
+ * @param path: path que se  formo a partir de los datos del usuario
+ * @returns: retorna la carpeta padre y en otro caso, se informa un error
  */
-async function getParent(path) {
+async function getParentFile(path) {
+
     let root = await drive.build.files.get({fileId: "root"});
 
     root = {
@@ -74,71 +126,27 @@ async function getParent(path) {
         name: root.data.name
     }
 
-    let names = path.split("/");
+    let names = path.split("/"); // Lista de nombres de carpetas a buscar
     if (names.length === 1)
-        return root;
-
+        return root;   
+    
+    //Por cada nombre de carpeta contenda en el path
     for (let i = 1; i < names.length; i++) {
-        let childrenList = await getFilesFromPath(root.id);
-        if(!childrenList)
-            return null;
-
+        // Obtencion de lista de archivos hijos (Identificados por un id)
+        const childrenList = await getChildrenFilesFolder(root.id).catch(
+            (error) => {throw Error(error)}
+        ); 
+        //Busqueda de la carpeta, asociando el nombre con el id   
         let children = getChildrenPath(childrenList, names[i]);
+
         if(children)
             root = children
-        else{
-            console.log("El directorio no existe!")
-            return null;
-        }
+        else
+            throw {message:"Directory \""+ path + "\" not found"};        
     }
 
     return root;
 }
 
-/** todo acomodar comentario
- * Inserta un archivo, en la posicion que le indique su padre
- * @param fileContainer: Contiene todos los datos del archivo a subir
- */
-function insertDrive(fileContainer, successCallback, errorCallback) {
-    let fileMetadata = {
-        name: fileContainer.name,
-        parents: [fileContainer.parent.id]
-    };
 
-    drive.build.files.create(
-        {
-            resource: fileMetadata,
-            media: fileContainer.media,
-            fields: 'id'
-        }, (err, res) => {
-            if (err) errorCallback('Error al insertar: ' + err);
-            successCallback(res.data.files);
-        }
-    );
-}
-
-
-
-function wrapperInsert(fileContainer){
-
-    return new Promise((resolve, reject) => {
-        insertDrive(
-            fileContainer,
-            (successResponse) => {
-                resolve(successResponse);
-            },
-            (errorResponse) => {
-                reject(errorResponse);
-            }
-        );
-    });
-}
-
-
-
-function insert(fileContainer){
-    return wrapperInsert(fileContainer);
-}
-
-
-module.exports = {getParent, getFilesFromPath, insert};
+module.exports = {getParentFile, getChildrenFilesFolder, insert};

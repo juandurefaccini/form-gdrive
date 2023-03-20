@@ -7,37 +7,26 @@ const fs = require("fs");
  * @param scope: contiene los metadatos respecto al contexto academico del archivo
  */
 function uploadFile(file, scope) {
-    try {
-        let media = {
-            mimeType: file.extension,
-            body: fs.createReadStream(file.pathSource)
-        };
 
-        const fileContainer = {
-            name: file.name,
-            media: media,
-            path:
-                "My Drive/ingenieria de sistemas/" +
-                scope.anioAcademico.toLowerCase() +
-                "/" +
-                scope.catedra.toLowerCase() +
-                "/" +
-                scope.tipo.toLowerCase(),
-        };
+    let media = {
+        mimeType: file.extension,
+        body: fs.createReadStream(file.pathSource)
+    };
 
-        const isEmptyMedia = Object.values(media).every((x) => x === null);
-        const isEmptyFile = Object.values(fileContainer).every((x) => x === null || x === "");
+    const fileContainer = {
+        name: file.name,
+        media: media,
+        path:
+            "My Drive/ingenieria de sistemas/" +
+            scope.anioAcademico.toLowerCase() +
+            "/" +
+            scope.catedra.toLowerCase() +
+            "/" +
+            scope.tipo.toLowerCase(),
+    };
+    
+    return googleDriveService.uploadFileService(fileContainer);
 
-        if (isEmptyMedia || isEmptyFile) {
-            console.log("Los campos no pueden ser vacios!");
-            return;
-        }
-
-        return googleDriveService.uploadFileService(fileContainer);
-
-    } catch (error) {
-        console.log(error);
-    }
 }
 
 module.exports = {uploadFile};
