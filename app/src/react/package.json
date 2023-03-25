@@ -1,0 +1,43 @@
+{
+    "name": "form-gdrive",
+    "private": true,
+    "version": "0.0.0",
+    "scripts": {
+      "dev": "vite",
+      "build": "tsc && vite build",
+      "preview": "vite preview",
+      "esbuild-cjs": "esbuild main.js --format=cjs --outfile=./dist/main.js"
+    },
+    "dependencies": {
+      "@emotion/styled": "^11.10.5",
+      "@tailwindcss/forms": "^0.5.3",
+      "firebase": "^9.8.1",
+      "formik": "^2.2.9",
+      "moment": "^2.29.4",
+      "notistack": "^2.0.8",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0",
+      "react-firebase-hooks": "^5.0.3",
+      "react-router-dom": "^6.3.0",
+      "yup": "^0.32.11"
+    },
+    "devDependencies": {
+      "@types/react": "^18.0.0",
+      "@types/react-dom": "^18.0.0",
+      "@typescript-eslint/eslint-plugin": "^5.51.0",
+      "@typescript-eslint/parser": "^5.51.0",
+      "@vitejs/plugin-react": "^1.3.0",
+      "autoprefixer": "^10.4.4",
+      "concurrently": "^7.2.0",
+      "esbuild": "^0.14.39",
+      "eslint": "^8.33.0",
+      "eslint-config-prettier": "^8.6.0",
+      "eslint-plugin-react": "^7.32.2",
+      "postcss": "^8.4.12",
+      "prettier": "2.8.3",
+      "tailwindcss": "^3.0.24",
+      "typescript": "^4.6.3",
+      "vite": "^2.9.5",
+      "wait-on": "^6.0.1"
+    }
+}

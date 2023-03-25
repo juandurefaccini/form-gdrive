@@ -5,9 +5,9 @@
 ### Dependencias
 <code> npm i </code> Directorio '.' 
 
-<code> npm i </code> Directorio './app' 
+<code> npm i </code> Directorio './app/src/react' 
 
 ### Run
-<code> npm run start </code> Directorio './app' 
+<code> npm run dev </code> Directorio './app/src/react' 
 
 <code> npm run start </code> Directorio '.' 
