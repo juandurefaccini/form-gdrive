@@ -28,9 +28,12 @@ app.whenReady().then(createMainWindow);
 
 ipcMain.on('file:upload', (event, opt) => {
 
-    upload.uploadFile(opt.file, opt.scope).then(
-        (response) => event.reply('asynchronous-response', response)
-    ).catch(
-        (error) => event.reply('asynchronous-error', error)
-    ) 
+  upload.uploadFile(opt.file, opt.scope).then(
+        (response) => { 
+          mainWindow.webContents.send('upload:complete', response)
+      }).catch(
+        (error) => {
+          mainWindow.webContents.send('upload:fail', error.message);
+        }) 
+
 })

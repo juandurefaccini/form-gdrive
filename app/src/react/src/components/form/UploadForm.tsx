@@ -10,7 +10,6 @@ import { DateField } from "./input/DateField";
 import moment from "moment/moment";
 import { FormTitle } from "./FormTitle";
 import { FileField } from "./FileField";
-import { useAuth } from "../../context/authContext.jsx";
 import { Card } from "../layout/Card";
 
 interface IFormValues {
@@ -29,12 +28,15 @@ const formInitialValues: IFormValues = {
   anio_catedra: "",
 };
 
+const ipcRenderer = (window as any).ipcRenderer;
+let isSubscribed:boolean = false;
+
+
 export default function UploadForm() {
-  const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  
 
   const handleSubmit = (values: IFormValues, actions: FormikHelpers<any>) => {
-    const extension = values.archivo.type;
     const catedra = values.materia;
     const categoria = values.categoria;
     const anio_catedra = values.anio_catedra;
@@ -61,9 +63,23 @@ export default function UploadForm() {
       tipo: categoria,
       anioAcademico: anio_catedra,
     };
+    
 
-    const ipcRenderer = (window as any).ipcRenderer;
-    ipcRenderer.send('file:upload', { file: file, scope: scope });
+    if(!isSubscribed){
+        isSubscribed = true;
+
+        ipcRenderer.on('upload:complete',  (event: any, data: any) => {
+            enqueueSnackbar("Archivo subido con exito", { variant: "success" });
+        });
+
+        ipcRenderer.on('upload:fail', (event: any, error: any) => {
+            enqueueSnackbar(`Error: ${error}`, { variant: "error" });
+            actions.setSubmitting(false);  
+        });
+    }
+
+    ipcRenderer.send('file:upload', { file: file, scope: scope});
+    
   };
 
   const validationSchema = Yup.object({
