@@ -18,8 +18,6 @@ function createMainWindow() {
     },
   });
 
-  mainWindow.webContents.openDevTools();
-
   mainWindow.loadURL('http://localhost:3000');
 }
 
