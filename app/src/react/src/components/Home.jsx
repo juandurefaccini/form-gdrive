@@ -1,5 +1,6 @@
 import * as React from "react";
 import UploadForm from "./form/UploadForm";
+import NotificationList from "./NotificationList";
 
 export const Home = (props) => {
   return (

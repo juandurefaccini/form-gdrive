@@ -2,6 +2,7 @@ import React from "react";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { socket } from "../socket";
 
 export default function LoginButton() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function LoginButton() {
       loginWithGoogle()
         .then(() => {
           enqueueSnackbar("Inicio de sesión exitoso", { variant: "success" });
+          socket.io.opts.query = { userid: "jaagdufa%40gmail.com" };
+          socket.connect()
           navigate("/subirArchivo");
         })
         .catch((error) => {
