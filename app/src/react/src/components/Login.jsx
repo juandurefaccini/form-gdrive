@@ -3,7 +3,7 @@ import LoginButton from "./LoginButton";
 import GoogleDriveIcon from "../assets/favicon.svg"; //TODO
 import { Card } from "./layout/Card";
 
-export default function Login() {
+export default function Login({ socket }) {
   return (
     <div className="flex justify-center items-center w-full h-full space-y-3">
       <div className="w-full flex justify-center">
@@ -15,7 +15,7 @@ export default function Login() {
               remoto compartido. Para iniciar la aplicacion primero debe iniciar
               sesión
             </p>
-            <LoginButton />
+            <LoginButton socket={socket} />
           </Card>
         </div>
       </div>

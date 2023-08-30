@@ -3,51 +3,52 @@ import { useEffect } from "react";
 import Login from "./components/Login";
 import TopBar from "./components/TopBar";
 import { AuthProvider } from "./context/authContext.jsx";
-import { SnackbarProvider } from "notistack";
+import { SnackbarProvider, useSnackbar } from "notistack";
 import { Home } from "./components/Home";
-import { socket } from "./socket";
-import { useSnackbar } from "notistack";
+import { getSocket } from "./socket";
 
+const socket = getSocket();
 
-function Socket() {
+const Notifier = () => {
+
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
+    socket.connect();
     socket.on('default', (res) => {
-      if (res) {
-        console.log({ res });
-        if (res.length) {
-          const messages = res.split(",");
-          messages.forEach(element => {
-            enqueueSnackbar(element, { variant: "info" });
-          });
-        }
-        enqueueSnackbar(res, { variant: "info" });
+      if (!res) return;
+      if (res.type && res.message) {
+        enqueueSnackbar(res.message, { variant: "info" });
+        return;
       }
+      const messages = res.split(', ');
+      messages.forEach(message => {
+        enqueueSnackbar(message, { variant: "info" });
+      });
     })
+
     return () => {
-      socket.off('default')
-    };
-  })
+      socket.off('default');
+    }
+  }, []);
+
+  return null;
 }
 
 function App() {
-
-
-
   return (
-    <SnackbarProvider>
+    <SnackbarProvider maxSnack={99}>
       <AuthProvider>
-        <Socket />
+        <Notifier />
         <div className="bg-whitetext-gray-500">
           <div className="container mx-auto h-screen flex flex-col ">
             <div className="h-12 shrink-0">
-              <TopBar />
+              <TopBar socket={socket} />
             </div>
             <div className="h-full w-full">
               <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/subirArchivo" element={<Home />} />
+                <Route path="/" element={<Login socket={socket} />} />
+                <Route path="/subirArchivo" element={<Home socket={socket} />} />
               </Routes>
             </div>
           </div>

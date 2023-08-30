@@ -2,17 +2,16 @@ import React from "react";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import LogOutIcon from "../assets/favicon.svg"; //TODO
-import { socket } from "../socket";
 
-export default function TopBar() {
+export default function TopBar({ socket }) {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
   const location = window.location.pathname;
 
   const handleLogout = async () => {
     try {
-      socket.disconnect();
       logout();
+      socket.disconnect();
       navigate("/");
     } catch (error) {
       alert(error.message);

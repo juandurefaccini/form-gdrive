@@ -29,12 +29,12 @@ const formInitialValues: IFormValues = {
 };
 
 const ipcRenderer = (window as any).ipcRenderer;
-let isSubscribed:boolean = false;
+let isSubscribed: boolean = false;
 
 
-export default function UploadForm() {
+export default function UploadForm({ socket }) {
   const { enqueueSnackbar } = useSnackbar();
-  
+
 
   const handleSubmit = (values: IFormValues, actions: FormikHelpers<any>) => {
     const catedra = values.materia;
@@ -54,8 +54,8 @@ export default function UploadForm() {
     const file = {
       name: nombreFinal,
       // @ts-ignore
-      pathSource : values.archivo.path,
-      extension : values.archivo.type
+      pathSource: values.archivo.path,
+      extension: values.archivo.type
     };
 
     const scope = {
@@ -63,23 +63,23 @@ export default function UploadForm() {
       tipo: categoria,
       anioAcademico: anio_catedra,
     };
-    
 
-    if(!isSubscribed){
-        isSubscribed = true;
 
-        ipcRenderer.on('upload:complete',  (event: any, data: any) => {
-            enqueueSnackbar("Archivo subido con exito", { variant: "success" });
-        });
+    if (!isSubscribed) {
+      isSubscribed = true;
 
-        ipcRenderer.on('upload:fail', (event: any, error: any) => {
-            enqueueSnackbar(`Error: ${error}`, { variant: "error" });
-            actions.setSubmitting(false);  
-        });
+      ipcRenderer.on('upload:complete', (event: any, data: any) => {
+        enqueueSnackbar("Archivo subido con exito", { variant: "success" });
+      });
+
+      ipcRenderer.on('upload:fail', (event: any, error: any) => {
+        enqueueSnackbar(`Error: ${error}`, { variant: "error" });
+        actions.setSubmitting(false);
+      });
     }
 
-    ipcRenderer.send('file:upload', { file: file, scope: scope});
-    
+    ipcRenderer.send('file:upload', { file: file, scope: scope });
+
   };
 
   const validationSchema = Yup.object({
@@ -103,6 +103,13 @@ export default function UploadForm() {
         validationSchema={validationSchema}
         onSubmit={(values, actions) => {
           handleSubmit(values, actions);
+          socket.emit(
+            "default",
+            {
+              type: "CLIENT",
+              message: "prueba"
+            }
+          )
         }}
       >
         {(props: FormikProps<any>) => (
@@ -116,7 +123,7 @@ export default function UploadForm() {
                   value: materia[1],
                   label: materia[0],
                 }))}
-                // disabled={props.isSubmitting}
+              // disabled={props.isSubmitting}
               />
               <SelectField
                 name={"categoria"}
@@ -125,7 +132,7 @@ export default function UploadForm() {
                   value: categoria[1],
                   label: categoria[0],
                 }))}
-                // disabled={props.isSubmitting}
+              // disabled={props.isSubmitting}
               />
               <SelectField
                 name={"anio_catedra"}
@@ -134,12 +141,12 @@ export default function UploadForm() {
                   value: año[1],
                   label: año[0],
                 }))}
-                // disabled={props.isSubmitting}
+              // disabled={props.isSubmitting}
               />
               <DateField
                 name={"fecha"}
                 label="Fecha"
-                // disabled={props.isSubmitting}
+              // disabled={props.isSubmitting}
               />
               <FileField name={"archivo"} label={"Subir archivo"} />
               <div
@@ -149,14 +156,14 @@ export default function UploadForm() {
                   className="w-full cursor-pointer inline-block rounded-lg bg-gray-500 py-2 text-sm font-medium text-white"
                   onClick={() => props.resetForm()}
                   type="button"
-                  // disabled={props.isSubmitting}
+                // disabled={props.isSubmitting}
                 >
                   Limpiar
                 </button>
                 <button
-                    className="w-full cursor-pointer ml-3 inline-block rounded-lg bg-blue-500 py-2 text-sm font-medium text-white"
-                    type="submit"
-                    // disabled={props.isSubmitting}
+                  className="w-full cursor-pointer ml-3 inline-block rounded-lg bg-blue-500 py-2 text-sm font-medium text-white"
+                  type="submit"
+                // disabled={props.isSubmitting}
                 >
                   Subir archivo
                 </button>
