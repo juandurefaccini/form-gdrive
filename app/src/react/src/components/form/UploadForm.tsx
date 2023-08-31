@@ -70,6 +70,13 @@ export default function UploadForm({ socket }) {
 
       ipcRenderer.on('upload:complete', (event: any, data: any) => {
         enqueueSnackbar("Archivo subido con exito", { variant: "success" });
+        socket.emit(
+          "default",
+          {
+            type: "CLIENT",
+            message: "Se subio un " + values.categoria + " de " + values.materia,
+          }
+        )
       });
 
       ipcRenderer.on('upload:fail', (event: any, error: any) => {
@@ -102,14 +109,8 @@ export default function UploadForm({ socket }) {
         initialValues={formInitialValues}
         validationSchema={validationSchema}
         onSubmit={(values, actions) => {
-          handleSubmit(values, actions);
-          socket.emit(
-            "default",
-            {
-              type: "CLIENT",
-              message: "Se subio un " + values.categoria + " de " + values.materia,
-            }
-          )
+          handleSubmit(values, actions)
+
         }}
       >
         {(props: FormikProps<any>) => (
