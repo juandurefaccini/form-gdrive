@@ -14,7 +14,6 @@ const Notifier = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    socket.connect();
     socket.on('default', (res) => {
       if (!res) return;
       if (res.type && res.message) {

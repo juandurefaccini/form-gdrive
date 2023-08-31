@@ -107,7 +107,7 @@ export default function UploadForm({ socket }) {
             "default",
             {
               type: "CLIENT",
-              message: "prueba"
+              message: "Se subio un " + values.categoria + " de " + values.materia,
             }
           )
         }}
